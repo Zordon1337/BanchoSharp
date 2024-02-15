@@ -1,0 +1,7 @@
+
+*.dll
+*.exe
+*.pdb
+*.cache
+obj/Debug/net8.0/osusharp.csproj.FileListAbsolute.txt
+*.dll

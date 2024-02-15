@@ -9,5 +9,5 @@ basic c.ppy.sh page
 
 ## Whats not working
 ```
-Login Packet is not being readed correctly and first letter of username is not readed by server, and the 3rd line is only readed partially
+
 ```

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Net;
 using System.Net.Cache;
 using System.Net.Sockets;
 using System.Runtime.Intrinsics.X86;
 using System.Text;
+using System.Text.RegularExpressions;
 
 public class Program {
     static bool test = false;
@@ -95,13 +97,14 @@ public class Program {
             
             response.AddHeader("cho-protocol", "19");
             Stream ns = response.OutputStream;
+            Stream iss = context.Request.InputStream;
             if(context.Request.HttpMethod == "GET" && !context.Request.Url.ToString().Contains("favicon.ico"))
             {
                 if(context.Request.UserAgent == "osu!")
                     Console.WriteLine($"[X] Got connection with osu user agent");
                 Console.WriteLine("[X] Path: "+context.Request.Url);
             }
-            if(context.Request.Url.ToString().Contains("c.ppy.sh") || context.Request.Url.ToString().Contains("c1.ppy.sh") && context.Request.HttpMethod == "POST")
+            if(context.Request.Url.ToString().Contains("ppy.sh") && context.Request.HttpMethod == "POST" && context.Request.Url.ToString().StartsWith("http://c"))
             {
                 //response.ContentType = "application/octet-stream";
                 MemoryStream ms = new MemoryStream();
@@ -111,17 +114,18 @@ public class Program {
                 if(context.Request.Headers["osu-token"] == null)
                 {
                     
-                    BinaryReader br = new BinaryReader(context.Request.InputStream,Encoding.UTF8);
+                    StreamReader br = new StreamReader(context.Request.InputStream,Encoding.UTF8);
                     
                     try {
                         
                         
-                        var test2 = br.ReadString(); // i need to fix problem which makes the string getting only partially readed
-
-                        string[] lines =  test2.Split('\n');
-                        string[] lines2 = lines[2].Split('|');
-                        string username = lines[0];
-                        string password = lines[1];
+                        var test1 = br.ReadLine(); // i need to fix problem which makes the string getting only partially readed
+                        var test2 = br.ReadLine();
+                        var test3 = br.ReadLine();
+                        
+                        string[] lines2 = test3.Split('|');
+                        string username = test1;
+                        string password = test2;
                         string version = lines2[0];
                         Console.WriteLine($"[X] Player {username} attempted to login from {version}");
                         bw.Write(0);
@@ -208,8 +212,45 @@ public class Program {
                     sw.Flush();
                 }
             }
+            if(context.Request.Url.ToString().Contains("/web/osu-submit-modular.php"))
+            {
+                Console.WriteLine(context.Request.Url.ToString());
+                StreamReader reader = new StreamReader(iss);
+                NameValueCollection formData = ReadMultipartFormData(context.Request);
+
+                // Extract values from formData
+                string score = formData["score"];
+                string iv = formData["iv"];
+                if(score != null && iv != null)
+                {
+                    string decryptedscore = CryptoHelper.DecryptString(score,Encoding.UTF8.GetBytes(CryptoHelper.key),iv);
+                    Console.WriteLine($"Decrypted score: {decryptedscore}");
+                } else {
+                    Console.WriteLine("score is null?");
+                }
+
+            }
             context.Response.OutputStream.Close();
         }
+    }
+    static string ExtractValueFromPostData(string postData, string key)
+    {
+        // Extract the value of the specified key from the POST data
+        string searchKey = $"{key}=";
+        int startIndex = postData.IndexOf(searchKey);
+
+        if (startIndex != -1)
+        {
+            int endIndex = postData.IndexOf("&", startIndex);
+            if (endIndex == -1)
+            {
+                endIndex = postData.Length;
+            }
+
+            return Uri.UnescapeDataString(postData.Substring(startIndex + searchKey.Length, endIndex - startIndex - searchKey.Length));
+        }
+
+        return null;
     }
     public static void SendPacket(int packet, bool compression, MemoryStream ms, Stream ns)
     {
@@ -222,5 +263,51 @@ public class Program {
         bw.Flush();
         ms.Position = 0;
     }
-    
+    static NameValueCollection ReadMultipartFormData(HttpListenerRequest request)
+    {
+        string boundary = GetBoundary(request.ContentType);
+
+        using (Stream body = request.InputStream)
+        {
+            using (StreamReader reader = new StreamReader(body, request.ContentEncoding))
+            {
+                string formDataString = reader.ReadToEnd();
+
+                // Split the formDataString using the boundary
+                string[] parts = formDataString.Split(new[] { boundary }, StringSplitOptions.RemoveEmptyEntries);
+
+                NameValueCollection formData = new NameValueCollection();
+
+                foreach (string part in parts)
+                {
+                    // Extract name and value from each part
+                    Match nameMatch = Regex.Match(part, @"name=""(?<name>.*?)""");
+                    Match valueMatch = Regex.Match(part, @"\r\n\r\n(?<value>.*?)\r\n");
+
+                    if (nameMatch.Success && valueMatch.Success)
+                    {
+                        string name = nameMatch.Groups["name"].Value;
+                        string value = valueMatch.Groups["value"].Value;
+
+                        formData[name] = value;
+                    }
+                }
+
+                return formData;
+            }
+        }
+    }
+
+    static string GetBoundary(string contentType)
+    {
+        string[] elements = contentType.Split(';');
+        string boundaryElement = Array.Find(elements, e => e.Trim().StartsWith("boundary="));
+
+        if (boundaryElement != null)
+        {
+            return boundaryElement.Trim().Substring("boundary=".Length);
+        }
+
+        throw new ArgumentException("Boundary not found in Content-Type header");
+    }
 }

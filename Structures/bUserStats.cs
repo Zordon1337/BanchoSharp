@@ -1,6 +1,6 @@
 using static Program;
 
-class bUserStats
+public class bUserStats
 {
         public bUserStatus Status;
         public float Accuracy;
