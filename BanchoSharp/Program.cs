@@ -177,8 +177,11 @@ public class AvatarServer {
     {
         try {
             context.Response.ContentType = "image/png";
-            byte[] imageData = File.ReadAllBytes("C:\\lol.png");
-            context.Response.OutputStream.Write(imageData, 0, imageData.Length);
+            if(File.Exists("C:\\lol.png"))
+            {
+                byte[] imageData = File.ReadAllBytes("C:\\lol.png");
+                context.Response.OutputStream.Write(imageData, 0, imageData.Length);
+            }
             context.Response.OutputStream.Close();
         } catch {
             
@@ -188,17 +191,7 @@ public class AvatarServer {
 public class Program {
     static void Main(string[] args)
     {
-        /*HttpListener srv = new HttpListener();
-        srv.Prefixes.Add("http://c.ppy.sh");
-        srv.Prefixes.Add("http://a.ppy.sh");
-        srv.Start();*/
-        
-
-        BanchoSharp.Lists.Users.scores.Add(new Score("test","ZRD","69","69","True","0","300","100","50","1,","2","3",DateTime.Now,1));
-        BanchoSharp.Lists.Users.scores.Add(new Score("test","ZRD2","77777777","69","True","0","300","100","50","1,","2","3",DateTime.Now,1));
         Console.WriteLine("[X] Server started listening at port 80");
-        Auth.CreateUser("ppy",CryptoHelper.CreateMD5("test123!"));
-        Auth.CreateUser("ZRD",CryptoHelper.CreateMD5("ZRD123!@#"));
         Server server = new Server();
         new Thread(()=>server.StartMultiServer(new string[]{"http://c.ppy.sh:7270/","http://c1.ppy.sh:7270/"},Bancho.Handler, "Bancho")).Start();
         new Thread(()=>server.StartServer("http://a.ppy.sh:7270/", AvatarServer.Handler,"Avatar server")).Start();
