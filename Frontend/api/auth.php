@@ -7,7 +7,7 @@ $password = $_GET['password'];
 include_once("../db.php");
 include_once("../func.php");
 UpdateScore($username);
-UpdateAccuracy($password);
+UpdateAccuracy($username);
 $sql = "SELECT * FROM users WHERE username = '$username' && password = '$password'";
 $result = $db->query($sql);
 if($result->num_rows > 0)
