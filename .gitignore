@@ -1,7 +1,6 @@
 
-*.dll
-*.exe
-*.pdb
-*.cache
-obj/Debug/net8.0/osusharp.csproj.FileListAbsolute.txt
-*.dll
+obj/*
+BanchoSharp/bin/*
+BanchoSharp/obj/*
+Frontend/vendor/*
+
