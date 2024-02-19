@@ -102,20 +102,27 @@ public class Bancho {
                         //Console.WriteLine($"[X] Got connection with user agent: {context.Request.UserAgent}");
                         //Console.WriteLine("[X] Path: "+context.Request.Url);
                         //Console.WriteLine($"Got packet with token: {context.Request.Headers["osu-token"]}");
-                        Console.WriteLine("Got packet "+pid);
+                        Console.WriteLine("[X] Got packet "+pid);
                         switch(pid)
                         {
                             case 31: // MatchCreate
                             {
-                                bMatch match = new bMatch(MatchTypes.Standard,1,"test game", "","",0,Mods.None,1);
+                                //bMatch match = new bMatch(context.Request.InputStream);
                                 Writer w = new Writer(ns);
-                                MemoryStream MS = new MemoryStream();
-                                match.WriteToStream(w);
-                                SendPacket(36,false,ms,ns);
+                                //MemoryStream MS = new MemoryStream();
+                                //match.WriteToStream(w);
+                                SendEmptyPacket(37,ns);
+                                //bw.Write("#lobby");
+                                //bw.Flush();
+                                //SendPacket(64,false,ms,ns);
+                                //bw.Write("#multi_1");
+                                //bw.Flush();
+                                //SendPacket(64,false,ms,ns);
                                 break;
                             }
                             case 85:
                             {
+                                Console.WriteLine(br.ReadInt16());
                                 string username = context.Request.Headers.Get("osu-token");
                                 string response2 = Auth.GetByUsername(username);
                                 if(response2 != "fail")
@@ -128,6 +135,7 @@ public class Bancho {
                                     PP = (short)int.Parse(parsed[3]);
                                     new bUserStats(userid,new bUserStatus(0,"idle","md5",0,0,0),totalscore,accuracy,1,totalscore,1,PP).WriteToStream(bw);
                                     SendPacket(11,false,ms,ns); // UserStats Packet
+                                    
                                 }
                                 
                                 break;
@@ -170,12 +178,21 @@ public class Bancho {
         bw.Flush();
         ms.Position = 0;
     }
+    public static void SendEmptyPacket(int packet, Stream ns)
+    {
+        Console.WriteLine($"[X] Writing Packet {packet}");
+        BinaryWriter bw = new BinaryWriter(ns);
+        bw.Write((UInt16)packet);
+        bw.Write(false);
+        bw.Write(0);
+        bw.Flush();
+    }
 }
 
 public class AvatarServer {
     public static void Handler(HttpListenerContext context)
     {
-        Console.WriteLine($"got request to avatar server {context.Request.RawUrl}");
+        Console.WriteLine($"[X] Got request to avatar server {context.Request.RawUrl}");
         try {
             context.Response.ContentType = "image/png";
             if(File.Exists("C:\\lol.png"))

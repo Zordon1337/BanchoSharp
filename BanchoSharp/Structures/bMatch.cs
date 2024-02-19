@@ -3,8 +3,9 @@ using StreamUtils;
 
 namespace BanchoSharp.Structures {
     public class bMatch {
-        public bMatch(MatchTypes matchType, int playMode, string gameName, string beatmapName, string beatmapChecksum, int beatmapId, Mods activeMods, int hostId)
+        public bMatch(int MatchId,MatchTypes matchType, int playMode, string gameName, string beatmapName, string beatmapChecksum, int beatmapId, Mods activeMods, int hostId)
         {
+            this.matchId = MatchId;
             this.matchType = matchType;
             this.playMode = playMode;
             this.gameName = gameName;
