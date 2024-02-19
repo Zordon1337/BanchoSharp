@@ -23,6 +23,7 @@ before proceding check if you have everything installed mentioned in Line 5
 ps: i don't recommend using this unless you have basic experience with: C#, PHP and MYSQL
 <br/>
 ps2: the db related things relay on basically PHP server for ex. score submitting, leaderboards and logging in
+
 ## Whats done
 ```
 Logging in
