@@ -175,6 +175,7 @@ public class Bancho {
 public class AvatarServer {
     public static void Handler(HttpListenerContext context)
     {
+        Console.WriteLine($"got request to avatar server {context.Request.RawUrl}");
         try {
             context.Response.ContentType = "image/png";
             if(File.Exists("C:\\lol.png"))
@@ -194,7 +195,7 @@ public class Program {
         Console.WriteLine("[X] Server started listening at port 80");
         Server server = new Server();
         new Thread(()=>server.StartMultiServer(new string[]{"http://c.ppy.sh:7270/","http://c1.ppy.sh:7270/"},Bancho.Handler, "Bancho")).Start();
-        new Thread(()=>server.StartServer("http://a.ppy.sh:7270/", AvatarServer.Handler,"Avatar server")).Start();
+        new Thread(()=>server.StartServer("http://a.ppy.sh:6666/", AvatarServer.Handler,"Avatar server")).Start();
         
     }
 }
