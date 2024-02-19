@@ -48,13 +48,13 @@ public class Bancho {
                         float accuracy = float.Parse(parsed[2]);
                         short PP = 0;
                         PP = (short)int.Parse(parsed[4]);
-                        response.Headers.Set("cho-token",userid.ToString());
+                        response.Headers.Set("cho-token",username.ToString());
                         username = username.Trim();
                         //Console.WriteLine($"{userid} {totalscore} {accuracy} {PP}");
                         bw.Write(0);
                         bw.Flush();
                         SendPacket(92,false,ms,ns); // SilenceInfo Packet
-                        bw.Write(1);
+                        bw.Write(userid);
                         bw.Flush();
                         SendPacket(5,false,ms,ns); // LoginReply Packet
                         bw.Write(19);

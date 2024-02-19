@@ -12,7 +12,7 @@ if($result->num_rows > 0)
     {
         $userid = $row['userid'];
         $totalscore = $row['totalscore'];
-        $accuracy = $row['accuracy'];
+        $accuracy = str_replace(".",",",$row['accuracy']);
         $PP = $row['PP'];
         $resp = "$userid|$accuracy|$totalscore|$PP";
         echo $resp;

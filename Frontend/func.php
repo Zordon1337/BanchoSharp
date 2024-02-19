@@ -118,7 +118,7 @@ function DoScores($checksum)
     while($stmt->fetch())
     {
         echo GenerateScore($replayId,$user,$score,$combo,$c50,$c100,$c300,$cMiss,$cKatu,$cGeki,$fc,$mods,1,$row);
-        $row+1;
+        $row++;
     }
     $stmt->close();
 }
