@@ -1,4 +1,4 @@
-# W.I.P Bancho emulator written in C#, designed for clients from 2014 to 2016
+# W.I.P Bancho emulator written in C#, designed for clients from Late 2013 to Early 2016
 ![alt text](screenshot.png)
 
 ## To setup server you need
