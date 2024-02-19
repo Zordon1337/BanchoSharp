@@ -99,14 +99,26 @@ function InsertScore($score)
 function DoScores($checksum)
 {
     include_once("db.php");
-    $sql = "SELECT * FROM scores WHERE BeatmapHash = ?";
+    $sql = "WITH RankedScores AS (
+        SELECT *,
+            ROW_NUMBER() OVER (PARTITION BY username ORDER BY CAST(score AS SIGNED) DESC) AS row_num
+        FROM scores
+        WHERE BeatmapHash = ?
+    )
+    SELECT *
+    FROM RankedScores
+    WHERE row_num = 1
+    ORDER BY CAST(score AS SIGNED) DESC";
     $stmt = $db->prepare($sql);
     $stmt->bind_param("s",$checksum);
     $stmt->execute();
-    $stmt->bind_result($replayId,$bmap,$user,$score,$combo,$fc,$mods,$c300,$c100,$c50,$cGeki,$cKatu,$cMiss,$time,$mode);
+    $stmt->bind_result($replayId,$bmap,$user,$score,$combo,$fc,$mods,$c300,$c100,$c50,$cGeki,$cKatu,$cMiss,$time,$mode, $row_num);
+
+    $row = 1;
     while($stmt->fetch())
     {
-        echo GenerateScore($replayId,$user,$score,$combo,$c50,$c100,$c300,$cMiss,$cKatu,$cGeki,$fc,$mods,1,1);
+        echo GenerateScore($replayId,$user,$score,$combo,$c50,$c100,$c300,$cMiss,$cKatu,$cGeki,$fc,$mods,1,$row);
+        $row+1;
     }
     $stmt->close();
 }
