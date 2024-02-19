@@ -19,7 +19,9 @@ before proceding check if you have everything installed mentioned in Line 5
 8. start PHP server at port 3000(or other if you changed it in nginx config)
 9. start bancho server & avatar server
 10. connect with any osu client that doesn't use ssl(Late 2013-Late 2015)
+<br/>
 ps: i don't recommend using this unless you have basic experience with: C#, PHP and MYSQL
+<br/>
 ps2: the db related things relay on basically PHP server for ex. score submitting, leaderboards and logging in
 ## Whats done
 ```
