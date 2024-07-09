@@ -16,7 +16,7 @@ if($result->num_rows > 0)
     {
         $userid = $row['userid'];
         $totalscore = $row['totalscore'];
-        $accuracy = str_replace(".",",",$row['accuracy']);
+        $accuracy = round((float)$row['accuracy'],2);
         $PP = $row['PP'];
         $resp = "1|$userid|$accuracy|$totalscore|$PP";
         echo $resp;
