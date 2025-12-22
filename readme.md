@@ -1,3 +1,6 @@
+> [!NOTE]
+> Archived, project was never completed + my knowledge improved a lot since that time.
+
 # W.I.P Bancho emulator written in C#, designed for clients from Late 2013 to Early 2016
 ![alt text](screenshot.png)
 
